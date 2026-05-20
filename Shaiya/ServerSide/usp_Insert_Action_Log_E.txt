@@ -1,0 +1,24 @@
+You must define an action type in order for this to function properly.
+
+-- PvP Kill logging
+IF @ActionType = 103
+
+    -- call status update
+    EXEC securetech.dbo.Kill_Status;
+
+    -- call kill feed with parameters
+    EXEC securetech.dbo.Kill_Feed 
+        @CharName = @CharName,
+        @Text1    = @Text1,
+        @MapID    = @MapID;
+
+
+-- Leave logging (Logout)
+IF @ActionType = 108
+    EXEC [securetech].[dbo].[Online_Status];
+
+
+
+-- Enter logging (Login)
+IF @ActionType = 107
+    EXEC [securetech].[dbo].[Online_Status];
