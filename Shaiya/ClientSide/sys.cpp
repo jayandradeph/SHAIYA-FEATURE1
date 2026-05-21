@@ -79,7 +79,7 @@ PanelUIState hideButton{ 205, 1, 32, 32, &hide_button, &hide_button_hover, PANEL
 PanelUIState feedButton{ 16, 32, 32, 32, &feed_button, &feed_button_hover, PANEL_FEED };
 PanelUIState killButton{ 85, 32, 32, 32, &kill_button, &kill_button_hover, PANEL_KILL };
 PanelUIState onlineButton{ 154, 32, 32, 32, &online_button, &online_button_hover, PANEL_ONLINE };
-PanelUIState buttonBackground{ 0, 200, 250, 140, &toolbar_background, PANEL_HIDE };
+PanelUIState buttonBackground{ 0, 200, 250, 140, &toolbar_background, nullptr, PANEL_HIDE };
 
 auto ONLINE_format = "[ONLINE]";
 char ON[128] = "Total: 0";
