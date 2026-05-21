@@ -195,10 +195,20 @@ void updateStatusKill(const char* val) {
 
 inline constexpr int KILL_PROGRESS_WIDTH = 230;
 inline constexpr int PROGRESS_WIDTH = 230;
-inline void __stdcall renderProgressBarGeneric(int x, int y, int percent,
-    void* barTexture, bool fromRight, int maxWidth) {
+
+enum ProgressType {
+    PROGRESS_NORMAL,
+    PROGRESS_KILL
+};
+
+inline void __stdcall renderProgressBarGeneric(
+    int x, int y, int percent,
+    void* barTexture, bool fromRight,
+    int maxWidth)
+{
     if (percent < 0) percent = 0;
     if (percent > 100) percent = 100;
+
     int width = (percent * maxWidth) / 100;
     for (int i = 0; i < width; i++) {
         int drawX = fromRight ? (x - i) : (x + i);
@@ -212,18 +222,19 @@ inline void __stdcall renderProgressBarGeneric(int x, int y, int percent,
     }
 }
 
-inline void renderProgressBarKill(int x, int y, int percent, void* barTexture, bool fromRight) {
-    renderProgressBarGeneric(x, y, percent, barTexture, fromRight, KILL_PROGRESS_WIDTH);
+inline void renderProgressBar(
+    int x, int y, int percent,
+    void* barTexture, bool fromRight,
+    ProgressType type)
+{
+    int maxWidth = (type == PROGRESS_KILL) ? KILL_PROGRESS_WIDTH : PROGRESS_WIDTH;
+    renderProgressBarGeneric(x, y, percent, barTexture, fromRight, maxWidth);
 }
 
-inline void renderProgressBar(int x, int y, int percent, void* barTexture, bool fromRight) {
-    renderProgressBarGeneric(x, y, percent, barTexture, fromRight, PROGRESS_WIDTH);
-}
-
-const char* AoLFrames[] = {loadbar_AoL, loadbar_AoL_alt1, loadbar_AoL_alt2, loadbar_AoL_alt3, loadbar_AoL_alt4, loadbar_AoL_alt5
+const char* AoLFrames[] = { loadbar_AoL, loadbar_AoL_alt1, loadbar_AoL_alt2, loadbar_AoL_alt3, loadbar_AoL_alt4, loadbar_AoL_alt5
 };
 
-const char* UoFFrames[] = {loadbar_UoF, loadbar_UoF_alt1, loadbar_UoF_alt2, loadbar_UoF_alt3, loadbar_UoF_alt4, loadbar_UoF_alt5
+const char* UoFFrames[] = { loadbar_UoF, loadbar_UoF_alt1, loadbar_UoF_alt2, loadbar_UoF_alt3, loadbar_UoF_alt4, loadbar_UoF_alt5
 };
 
 inline const char* SelectKillTexture(const char** frames, unsigned int frameCount) {
@@ -277,12 +288,12 @@ const char* GetUoFTextureWithStop(int percent) {
 
 void renderAoLBar(int x, int y, int percent) {
     const char* tex = GetAoLTextureWithStop(percent);
-    renderProgressBarKill(x, y, percent, (void*)tex, false);
+    renderProgressBar(x, y, percent, (void*)tex, false, PROGRESS_KILL);
 }
 
 void renderUoFBar(int x, int y, int percent) {
     const char* tex = GetUoFTextureWithStop(percent);
-    renderProgressBarKill(x, y, percent, (void*)tex, true);
+    renderProgressBar(x, y, percent, (void*)tex, true, PROGRESS_KILL);
 }
 
 auto FEED_format = "[FEED]";
@@ -362,16 +373,19 @@ inline void renderBackground(void* background, int x, int y) {
 inline void renderPanel(PanelType type) {
     PanelUIState* ui = nullptr;
     switch (type) {
-    case PANEL_FEED: ui = &feedUi; break;
-    case PANEL_KILL: ui = &killUi; break;
+    case PANEL_FEED:   ui = &feedUi;   break;
+    case PANEL_KILL:   ui = &killUi;   break;
     case PANEL_ONLINE: ui = &onlineUi; break;
     default: return;
     }
+
     int panelX = ui->baseX + ui->offsetX;
     int panelY = ui->baseY + ui->offsetY;
+
     if (panelBackgrounds[type]) {
         renderBackground(panelBackgrounds[type], panelX, panelY);
     }
+
     if (type == PANEL_FEED) {
         TextEntry feedTexts[] = {
             {20, 32, feed_text_1, 255,255,255,0},
@@ -381,24 +395,36 @@ inline void renderPanel(PanelType type) {
             {20,112, feed_text_5, 255,255,255,0}
         };
         for (auto& t : feedTexts) {
-            renderPercentTextUnified(panelX + t.offsetX, panelY + t.offsetY, t.text, t.r, t.g, t.b, t.a);
+            renderPercentTextUnified(panelX + t.offsetX, panelY + t.offsetY,
+                t.text, t.r, t.g, t.b, t.a);
         }
     }
+
     else if (type == PANEL_KILL) {
-        renderAoLBar(panelX + 11, panelY + 56, g_lightPercentIntKill);
-        renderUoFBar(panelX + 241, panelY + 56, g_furyPercentIntKill);
+        renderProgressBar(panelX + 11, panelY + 56, g_lightPercentIntKill,
+           (void*)GetAoLTextureWithStop(g_lightPercentIntKill),
+            false, PROGRESS_KILL);
+
+        renderProgressBar(panelX + 241, panelY + 56, g_furyPercentIntKill,
+            (void*)GetUoFTextureWithStop(g_furyPercentIntKill),
+            true, PROGRESS_KILL);
 
         TextEntry killTexts[] = {
             {36, 32, PERCENT_LIGHT_KILL, 255,255,255,0},
             {150,32, PERCENT_FURY_KILL,  255,255,255,0}
         };
         for (auto& t : killTexts) {
-            renderPercentTextUnified(panelX + t.offsetX, panelY + t.offsetY, t.text, t.r, t.g, t.b, t.a);
+            renderPercentTextUnified(panelX + t.offsetX, panelY + t.offsetY,
+                t.text, t.r, t.g, t.b, t.a);
         }
     }
+
     else if (type == PANEL_ONLINE) {
-        renderProgressBar(panelX + 11, panelY + 32, g_lightPercentInt2, (void*)loadbar_AoL, false);
-        renderProgressBar(panelX + 241, panelY + 32, g_furyPercentInt2, (void*)loadbar_UoF, true);
+        renderProgressBar(panelX + 11, panelY + 32, g_lightPercentInt2,
+            (void*)loadbar_AoL, false, PROGRESS_NORMAL);
+
+        renderProgressBar(panelX + 241, panelY + 32, g_furyPercentInt2,
+            (void*)loadbar_UoF, true, PROGRESS_NORMAL);
 
         TextEntry onlineTexts[] = {
             {105,52, ON, 0,255,0,0},
@@ -420,7 +446,8 @@ inline void renderPanel(PanelType type) {
             {170,145,ORACLE,  255,255,255,0}
         };
         for (auto& t : onlineTexts) {
-            renderPercentTextUnified(panelX + t.offsetX, panelY + t.offsetY, t.text, t.r, t.g, t.b, t.a);
+            renderPercentTextUnified(panelX + t.offsetX, panelY + t.offsetY,
+                t.text, t.r, t.g, t.b, t.a);
         }
     }
 }
