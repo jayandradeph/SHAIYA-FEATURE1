@@ -206,7 +206,7 @@ inline void __stdcall renderProgressBarGeneric(int x, int y, int percent,
             push drawY
             push drawX
             mov ecx, barTexture
-            call isRenderObjectSingle
+            call render_tga
         }
     }
 }
@@ -355,7 +355,7 @@ inline void renderBackground(void* background, int x, int y) {
         push y
         push x
         mov ecx, background
-        call isRenderObjectSingle
+        call render_tga
     }
 }
 
