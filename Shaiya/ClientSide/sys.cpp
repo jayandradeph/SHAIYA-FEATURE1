@@ -111,10 +111,6 @@ inline void saveConfig(PanelUIState& ui) {
     WritePrivateProfileStringW(ui.sectionName, L"OffsetY", buf, ui.configFile);
 }
 
-auto ONLINE_format = "[ONLINE]";
-auto KILL_format = "[KILL]";
-auto FEED_format = "[FEED]";
-
 void updateStatusOnline(const char* val) {
     int total = 0, lightCount = 0, lightPercent = 0, furyCount = 0, furyPercent = 0;
     int fighter = 0, defender = 0, ranger = 0, archer = 0, mage = 0, priest = 0;
@@ -301,7 +297,12 @@ void shiftFeedTexts(const char* newNotice) {
     feed_texts[0].buffer[sizeof(feed_texts[0].buffer) - 1] = '\0';
 }
 
-DWORD render_notice = 0x5E5C10;
+auto ONLINE_format = "[ONLINE]";
+auto KILL_format = "[KILL]";
+auto FEED_format = "[FEED]";
+
+auto render_notice = reinterpret_cast<void(__stdcall*)(uintptr_t)>(0x5E5C10);
+
 inline void parseAndHandle(void* espBase) {
     void* arg = *(void**)((BYTE*)espBase + 0x54);
 
@@ -317,7 +318,7 @@ inline void parseAndHandle(void* espBase) {
         shiftFeedTexts((const char*)((BYTE*)espBase + 0x54 + 6));
         return;
     }
-    reinterpret_cast<void(__stdcall*)(DWORD)>(render_notice)((DWORD)arg);
+    render_notice(reinterpret_cast<uintptr_t>(arg));
 }
 
 inline void renderPercentText(int x, int y, const char* text,
