@@ -383,11 +383,11 @@ inline void renderPanel(PanelType type) {
     }
 
     else if (type == PANEL_KILL) {
-        renderProgressBar(panelX + 11, panelY + 56, g_lightPercentIntKill,
+        renderProgressBar(panelX + 11, panelY + 32, g_lightPercentIntKill,
            (void*)GetAoLTextureWithStop(g_lightPercentIntKill),
             false, PROGRESS_KILL);
 
-        renderProgressBar(panelX + 241, panelY + 56, g_furyPercentIntKill,
+        renderProgressBar(panelX + 241, panelY + 32, g_furyPercentIntKill,
             (void*)GetUoFTextureWithStop(g_furyPercentIntKill),
             true, PROGRESS_KILL);
 
