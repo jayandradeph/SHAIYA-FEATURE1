@@ -297,7 +297,6 @@ void shiftFeedTexts(const char* newNotice) {
     feed_texts[0].buffer[sizeof(feed_texts[0].buffer) - 1] = '\0';
 }
 
-auto render_notice = reinterpret_cast<void(__stdcall*)(uintptr_t)>(0x5E5C10);
 inline void parseAndHandle(void* espBase) {
     void* arg = *(void**)((BYTE*)espBase + 0x54);
     if (arg == *(void**)"[KILL]") {
@@ -312,7 +311,7 @@ inline void parseAndHandle(void* espBase) {
         shiftFeedTexts((const char*)((BYTE*)espBase + 0x54 + 6));
         return;
     }
-    render_notice(reinterpret_cast<uintptr_t>(arg));
+    reinterpret_cast<void(__stdcall*)(uintptr_t)>(0x5E5C10);
 }
 
 inline void renderPercentText(int x, int y, const char* text,
