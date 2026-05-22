@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <util/util.h>
 #include "include/main.h"
+#include "include/sys.h"
 #include <windows.h>
 #include <io.h>
 #include <cstdio>
