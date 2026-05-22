@@ -7,17 +7,16 @@
 #include <cstdio>
 #include <vector>
 
-
-enum PanelType { 
-    PANEL_HIDE, 
-    PANEL_FEED, 
-    PANEL_BALANCE, 
-    PANEL_ONLINE 
+enum PanelType {
+    PANEL_HIDE,
+    PANEL_FEED,
+    PANEL_BALANCE,
+    PANEL_ONLINE
 };
 
-enum ProgressType { 
-    PROGRESS_NORMAL, 
-    PROGRESS_KILL 
+enum ProgressType {
+    PROGRESS_NORMAL,
+    PROGRESS_KILL
 };
 
 struct PanelUIState {
@@ -34,8 +33,8 @@ struct PanelUIState {
     int defaultOffsetX = 0, defaultOffsetY = 0;
 };
 
-struct StatusText { 
-    char buffer[128]; 
+struct StatusText {
+    char buffer[128];
 };
 
 struct OnlineStatus {
@@ -57,8 +56,28 @@ struct KillStatus {
     int furyPercent = 0;
 };
 
+struct TextEntry {
+    int offsetX;
+    int offsetY;
+    const char* text;
+    int r, g, b, a;
+};
+
+StatusText feed_texts[5];
 OnlineStatus g_onlineStatus;
 KillStatus g_killStatus;
+PanelType g_activePanel = PANEL_HIDE;
+PanelUIState* g_activeDraggingPanel = nullptr;
+PanelUIState buttonUi{ 200,-300,250,140,nullptr,nullptr,PANEL_HIDE };
+PanelUIState feedUi{ 600,-300,250,140,nullptr,nullptr,PANEL_FEED };
+PanelUIState balanceUi{ 900,-300,250,140,nullptr,nullptr,PANEL_BALANCE };
+PanelUIState onlineUi{ 1000,-300,250,140,nullptr,nullptr,PANEL_ONLINE };
+PanelUIState hideButton{ 205,1,32,32,&hide_button,&hide_button_hover,PANEL_HIDE };
+PanelUIState feedButton{ 16,32,32,32,&feed_button,&feed_button_hover,PANEL_FEED };
+PanelUIState balanceButton{ 85,32,32,32,&balance_button,&balance_button_hover,PANEL_BALANCE };
+PanelUIState onlineButton{ 154,32,32,32,&online_button,&online_button_hover,PANEL_ONLINE };
+PanelUIState buttonBackground{ 0,200,250,140,&toolbar_background,nullptr,PANEL_HIDE };
+
 int g_lightPercentIntOnline = 0;
 int g_furyPercentIntOnline = 0;
 int g_lightPercentIntKill = 0;
@@ -91,16 +110,6 @@ inline void saveConfig(PanelUIState& ui) {
     swprintf(buf, 32, L"%d", ui.offsetY);
     WritePrivateProfileStringW(ui.sectionName, L"OffsetY", buf, ui.configFile);
 }
-
-PanelUIState buttonUi{ 200,-300,250,140,nullptr,nullptr,PANEL_HIDE };
-PanelUIState feedUi{ 600,-300,250,140,nullptr,nullptr,PANEL_FEED };
-PanelUIState balanceUi{ 900,-300,250,140,nullptr,nullptr,PANEL_BALANCE };
-PanelUIState onlineUi{ 1000,-300,250,140,nullptr,nullptr,PANEL_ONLINE };
-PanelUIState hideButton{ 205,1,32,32,&hide_button,&hide_button_hover,PANEL_HIDE };
-PanelUIState feedButton{ 16,32,32,32,&feed_button,&feed_button_hover,PANEL_FEED };
-PanelUIState balanceButton{ 85,32,32,32,&balance_button,&balance_button_hover,PANEL_BALANCE };
-PanelUIState onlineButton{ 154,32,32,32,&online_button,&online_button_hover,PANEL_ONLINE };
-PanelUIState buttonBackground{ 0,200,250,140,&toolbar_background,nullptr,PANEL_HIDE };
 
 auto ONLINE_format = "[ONLINE]";
 auto KILL_format = "[KILL]";
@@ -282,19 +291,14 @@ const char* GetUoFTextureWithStop(int percent) {
     return (const char*)loadbar_UoF;
 }
 
-char feed_text_1[128];
-char feed_text_2[128];
-char feed_text_3[128];
-char feed_text_4[128];
-char feed_text_5[128];
-
 void shiftFeedTexts(const char* newNotice) {
-    strcpy(feed_text_5, feed_text_4);
-    strcpy(feed_text_4, feed_text_3);
-    strcpy(feed_text_3, feed_text_2);
-    strcpy(feed_text_2, feed_text_1);
-    strncpy(feed_text_1, newNotice, sizeof(feed_text_1));
-    feed_text_1[sizeof(feed_text_1) - 1] = '\0';
+    strcpy(feed_texts[4].buffer, feed_texts[3].buffer);
+    strcpy(feed_texts[3].buffer, feed_texts[2].buffer);
+    strcpy(feed_texts[2].buffer, feed_texts[1].buffer);
+    strcpy(feed_texts[1].buffer, feed_texts[0].buffer);
+
+    strncpy(feed_texts[0].buffer, newNotice, sizeof(feed_texts[0].buffer));
+    feed_texts[0].buffer[sizeof(feed_texts[0].buffer) - 1] = '\0';
 }
 
 DWORD render_notice = 0x5E5C10;
@@ -315,13 +319,6 @@ inline void parseAndHandle(void* espBase) {
     }
     reinterpret_cast<void(__stdcall*)(DWORD)>(render_notice)((DWORD)arg);
 }
-
-struct TextEntry {
-    int offsetX;
-    int offsetY;
-    const char* text;
-    int r, g, b, a;
-};
 
 inline void renderPercentText(int x, int y, const char* text,
     int r, int g, int b, int a)
@@ -371,12 +368,13 @@ inline void renderPanel(PanelType type) {
     }
     if (type == PANEL_FEED) {
         TextEntry feedTexts[] = {
-            {20, 32, feed_text_1, 255,255,255,0},
-            {20, 52, feed_text_2, 255,255,255,0},
-            {20, 72, feed_text_3, 255,255,255,0},
-            {20, 92, feed_text_4, 255,255,255,0},
-            {20,112, feed_text_5, 255,255,255,0}
+            {20,  32, feed_texts[0].buffer, 255,255,255,0},
+            {20,  52, feed_texts[1].buffer, 255,255,255,0},
+            {20,  72, feed_texts[2].buffer, 255,255,255,0},
+            {20,  92, feed_texts[3].buffer, 255,255,255,0},
+            {20, 112, feed_texts[4].buffer, 255,255,255,0}
         };
+
         for (auto& t : feedTexts) {
             renderPercentText(panelX + t.offsetX, panelY + t.offsetY,
                 t.text, t.r, t.g, t.b, t.a);
@@ -433,8 +431,6 @@ inline void renderPanel(PanelType type) {
     }
 }
 
-PanelType g_activePanel = PANEL_HIDE;
-PanelUIState* g_activeDraggingPanel = nullptr;
 inline void handleMovementExclusive(PanelUIState& ui) {
     POINT curPos;
     if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
