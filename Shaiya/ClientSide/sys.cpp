@@ -491,7 +491,7 @@ inline void doAllPanels(int baseX, int baseY) {
     default: break;
     }
     buttonUi.baseX = baseX;
-    buttonUi.baseY = baseY + 200;
+    buttonUi.baseY = baseY;
     handleMovementExclusive(buttonUi);
     int bx = buttonUi.baseX + buttonUi.offsetX;
     int by = buttonUi.baseY + buttonUi.offsetY;
