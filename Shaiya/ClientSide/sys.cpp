@@ -68,15 +68,22 @@ OnlineStatus g_onlineStatus;
 KillStatus g_killStatus;
 PanelType g_activePanel = PANEL_HIDE;
 PanelUIState* g_activeDraggingPanel = nullptr;
-PanelUIState button_notice_ui{ 200, -300, 250, 140, nullptr, nullptr, PANEL_HIDE, {} , false, nullptr, 0, 0, L".\\panel.ini", L"BUTTON_NOTICE_UI", 200, -300 };
-PanelUIState kill_notice_ui{ 199, -227, 250, 140, nullptr, nullptr, PANEL_FEED, {} , false, nullptr, 0, 0, L".\\panel.ini", L"KILL_NOTICE_UI", 199, -227 };
-PanelUIState balance_notice_ui{ 199, -227, 250, 140, nullptr, nullptr, PANEL_BALANCE, {} , false, nullptr, 0, 0, L".\\panel.ini", L"BALANCE_NOTICE_UI", 199, -227 };
-PanelUIState online_notice_ui{ 199, -227, 250, 140, nullptr, nullptr, PANEL_ONLINE, {} , false, nullptr, 0, 0, L".\\panel.ini", L"ONLINE_NOTICE_UI", 199, -227 };
-PanelUIState toogle_hide_button{ 205,1,32,32,&hide_button,&hide_button_hover,PANEL_HIDE };
-PanelUIState toogle_feed_button{ 16,32,32,32,&feed_button,&feed_button_hover,PANEL_FEED };
-PanelUIState toogle_balance_button{ 85,32,32,32,&balance_button,&balance_button_hover,PANEL_BALANCE };
-PanelUIState toogle_online_button{ 154,32,32,32,&online_button,&online_button_hover,PANEL_ONLINE };
-PanelUIState background_toolbar{ 200,-300,250,140,&toolbar_background,nullptr};
+PanelUIState background_toolbar{ 200, -300, 250, 140, &toolbar_background, nullptr };
+
+std::map<PanelType, PanelUIState> panels = {
+    { PANEL_HIDE,    {200, -300, 250, 140, nullptr, nullptr, PANEL_HIDE, {}, false, nullptr, 0, 0, L".\\panel.ini", L"BUTTON_NOTICE_UI", 200, -300 } },
+    { PANEL_FEED,    {199, -227, 250, 140, nullptr, nullptr, PANEL_FEED, {}, false, nullptr, 0, 0, L".\\panel.ini", L"KILL_NOTICE_UI", 199, -227 } },
+    { PANEL_BALANCE, {199, -227, 250, 140, nullptr, nullptr, PANEL_BALANCE, {}, false, nullptr, 0, 0, L".\\panel.ini", L"BALANCE_NOTICE_UI", 199, -227 } },
+    { PANEL_ONLINE,  {199, -227, 250, 140, nullptr, nullptr, PANEL_ONLINE, {}, false, nullptr, 0, 0, L".\\panel.ini", L"ONLINE_NOTICE_UI", 199, -227 } }
+};
+
+std::map<PanelType, PanelUIState> toggleButtons = {
+    { PANEL_HIDE,    {205, 1, 32, 32, &hide_button,    &hide_button_hover,    PANEL_HIDE } },
+    { PANEL_FEED,    {16, 32, 32, 32, &feed_button,    &feed_button_hover,    PANEL_FEED } },
+    { PANEL_BALANCE, {85, 32, 32, 32, &balance_button, &balance_button_hover, PANEL_BALANCE } },
+    { PANEL_ONLINE,  {154,32, 32, 32, &online_button,  &online_button_hover,  PANEL_ONLINE } }
+};
+
 int g_lightPercentIntOnline = 0;
 int g_furyPercentIntOnline = 0;
 int g_lightPercentIntBalance = 0;
@@ -196,11 +203,9 @@ void updateStatusKill(const char* val) {
 inline void renderProgressBarGeneric(
     int x, int y, int percent,
     void* barTexture, bool fromRight,
-    int maxWidth)
-{
+    int maxWidth){
     if (percent < 0) percent = 0;
     if (percent > 100) percent = 100;
-
     int width = (percent * maxWidth) / 100;
     for (int i = 0; i < width; i++) {
         int drawX = fromRight ? (x - i) : (x + i);
@@ -281,7 +286,6 @@ void shiftFeedTexts(const char* newNotice) {
     strcpy(feed_texts[3].buffer, feed_texts[2].buffer);
     strcpy(feed_texts[2].buffer, feed_texts[1].buffer);
     strcpy(feed_texts[1].buffer, feed_texts[0].buffer);
-
     strncpy(feed_texts[0].buffer, newNotice, sizeof(feed_texts[0].buffer));
     feed_texts[0].buffer[sizeof(feed_texts[0].buffer) - 1] = '\0';
 }
@@ -330,22 +334,18 @@ inline void renderBackground(void* background, int x, int y) {
 }
 
 static void* panelBackgrounds[] = {
-    nullptr,                // PANEL_HIDE
-    &globalkill_background, // PANEL_BALANCE
-    &killfeed_background,   // PANEL_FEED
-    &online_background      // PANEL_ONLINE
+    nullptr,
+    &globalkill_background,
+    &killfeed_background,
+    &online_background
 };
 
 inline void renderPanel(PanelType type) {
-    PanelUIState* ui = nullptr;
-    switch (type) {
-    case PANEL_FEED:    ui = &kill_notice_ui;    break;
-    case PANEL_BALANCE: ui = &balance_notice_ui; break;
-    case PANEL_ONLINE:  ui = &online_notice_ui;  break;
-    default: return;
-    }
-    int panelX = ui->baseX + ui->offsetX;
-    int panelY = ui->baseY + ui->offsetY;
+    auto it = panels.find(type);
+    if (it == panels.end()) return;
+    PanelUIState& ui = it->second;
+    int panelX = ui.baseX + ui.offsetX;
+    int panelY = ui.baseY + ui.offsetY;
     if (panelBackgrounds[type]) {
         renderBackground(panelBackgrounds[type], panelX, panelY);
     }
@@ -357,10 +357,8 @@ inline void renderPanel(PanelType type) {
             {20,  92, feed_texts[3].buffer, 255,255,255,0},
             {20, 112, feed_texts[4].buffer, 255,255,255,0}
         };
-
         for (auto& t : feedTexts) {
-            renderPercentText(panelX + t.offsetX, panelY + t.offsetY,
-                t.text, t.r, t.g, t.b, t.a);
+            renderPercentText(panelX + t.offsetX, panelY + t.offsetY, t.text, t.r, t.g, t.b, t.a);
         }
     }
     else if (type == PANEL_BALANCE) {
@@ -448,9 +446,10 @@ inline void renderButton(const PanelUIState& btn, int baseX, int baseY) {
     int by = baseY + btn.offsetY;
     POINT curPos;
     GetCursorPos(&curPos);
-    if (button_notice_ui.gameHwnd) ScreenToClient(button_notice_ui.gameHwnd, &curPos);
-    bool isHover = (curPos.x >= bx && curPos.x <= bx + btn.width &&
-        curPos.y >= by && curPos.y <= by + btn.height);
+    if (btn.gameHwnd) {
+        ScreenToClient(btn.gameHwnd, &curPos);
+    }
+    bool isHover = (curPos.x >= bx && curPos.x <= bx + btn.width && curPos.y >= by && curPos.y <= by + btn.height);
     void* tex = (isHover && btn.hoverBackground) ? btn.hoverBackground : btn.background;
     renderBackground(tex, bx, by);
     if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) && isHover) {
@@ -459,34 +458,23 @@ inline void renderButton(const PanelUIState& btn, int baseX, int baseY) {
 }
 
 inline void doAllPanels(int baseX, int baseY) {
-    switch (g_activePanel) {
-    case PANEL_FEED:
-        kill_notice_ui.baseX = baseX; kill_notice_ui.baseY = baseY;
-        handleMovementExclusive(kill_notice_ui);
-        renderPanel(PANEL_FEED);
-        break;
-    case PANEL_BALANCE:
-        balance_notice_ui.baseX = baseX; balance_notice_ui.baseY = baseY;
-        handleMovementExclusive(balance_notice_ui);
-        renderPanel(PANEL_BALANCE);
-        break;
-    case PANEL_ONLINE:
-        online_notice_ui.baseX = baseX; online_notice_ui.baseY = baseY;
-        handleMovementExclusive(online_notice_ui);
-        renderPanel(PANEL_ONLINE);
-        break;
-    default: break;
+    for (auto& [type, ui] : panels) {
+        ui.baseX = baseX;
+        ui.baseY = baseY;
+        handleMovementExclusive(ui);
     }
-    button_notice_ui.baseX = baseX;
-    button_notice_ui.baseY = baseY;
-    handleMovementExclusive(button_notice_ui);
-    int bx = button_notice_ui.baseX + button_notice_ui.offsetX;
-    int by = button_notice_ui.baseY + button_notice_ui.offsetY;
+    if (g_activePanel != PANEL_HIDE) {
+        renderPanel(g_activePanel);
+    }
+    background_toolbar.baseX = baseX;
+    background_toolbar.baseY = baseY;
+    handleMovementExclusive(background_toolbar);
+    int bx = background_toolbar.baseX + background_toolbar.offsetX;
+    int by = background_toolbar.baseY + background_toolbar.offsetY;
     renderBackground(background_toolbar.background, bx, by);
-    renderButton(toogle_hide_button, bx, by);
-    renderButton(toogle_feed_button, bx, by);
-    renderButton(toogle_balance_button, bx, by);
-    renderButton(toogle_online_button, bx, by);
+    for (auto& [type, btn] : toggleButtons) {
+    renderButton(btn, bx, by);
+    }
 }
 
 auto u0x47DD54 = 0x47DD54;
@@ -518,8 +506,7 @@ __declspec(naked) void naked_0x5F3740() {
 }
 
 void hook::online() {
-    PanelUIState* panels[] = { &online_notice_ui,&balance_notice_ui,&kill_notice_ui,&button_notice_ui };
-    for (auto* ui : panels) loadConfig(*ui);
+    for (auto& [type, ui] : panels) {loadConfig(ui);}loadConfig(background_toolbar);
     util::detour((void*)0x47DD4D, naked_0x47DD4D, 7);
     util::detour((void*)0x5F3740, naked_0x5F3740, 5);
 }
