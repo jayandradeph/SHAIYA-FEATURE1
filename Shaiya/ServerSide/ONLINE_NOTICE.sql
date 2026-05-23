@@ -1,12 +1,4 @@
-﻿USE [securetech]
-GO
-/****** Object:  StoredProcedure [dbo].[Online_Status]    Script Date: 5/20/2026 9:19:08 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE PROCEDURE [dbo].[Online_Status]
+﻿CREATE PROCEDURE [dbo].[ONLINE_NOTICE]
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -64,7 +56,7 @@ BEGIN
         SET @furyPercent  = (@furyCount * 100) / @onlineCount;
 
         -- IMPORTANT: eksaktong order ng values para tumugma sa sscanf
-        SET @command = '/nt [ONLINE] ' 
+        SET @command = '/nt [ONLINE_NOTICE] ' 
                        + CAST(@onlineCount AS NVARCHAR(10)) + ' '   -- total
                        + CAST(@lightCount AS NVARCHAR(10)) + ' '    -- lightCount
                        + CAST(@lightPercent AS NVARCHAR(10)) + ' '  -- lightPercent
