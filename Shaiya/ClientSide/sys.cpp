@@ -76,7 +76,7 @@ PanelUIState toogle_hide_button{ 205,1,32,32,&hide_button,&hide_button_hover,PAN
 PanelUIState toogle_feed_button{ 16,32,32,32,&feed_button,&feed_button_hover,PANEL_FEED };
 PanelUIState toogle_balance_button{ 85,32,32,32,&balance_button,&balance_button_hover,PANEL_BALANCE };
 PanelUIState toogle_online_button{ 154,32,32,32,&online_button,&online_button_hover,PANEL_ONLINE };
-PanelUIState background_toolbar{ 0,200,250,140,&toolbar_background,nullptr};
+PanelUIState background_toolbar{ 200,-300,250,140,&toolbar_background,nullptr};
 
 int g_lightPercentIntOnline = 0;
 int g_furyPercentIntOnline = 0;
