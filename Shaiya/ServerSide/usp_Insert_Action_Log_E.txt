@@ -12,10 +12,10 @@ IF @ActionType = 103
              @LatestUserIP);
 
     -- call status update
-    EXEC securetech.dbo.Kill_Status;
+    EXEC securetech.dbo.BALANCE_NOTICE;
 
     -- call kill feed with parameters
-    EXEC securetech.dbo.Kill_Feed 
+    EXEC securetech.dbo.KILL_NOTICE 
         @CharName = @CharName,
         @Text1    = @Text1,
         @MapID    = @MapID;
@@ -23,9 +23,9 @@ IF @ActionType = 103
 
 -- Leave logging (Logout)
 IF @ActionType = 108
-    EXEC [securetech].[dbo].[Online_Status];
+    EXEC [securetech].[dbo].[ONLINE_NOTICE];
 
 
 -- Enter logging (Login)
 IF @ActionType = 107
-    EXEC [securetech].[dbo].[Online_Status];
+    EXEC [securetech].[dbo].[ONLINE_NOTICE];
