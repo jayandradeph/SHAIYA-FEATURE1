@@ -215,13 +215,13 @@ inline void renderProgressBarGeneric(
 }
 
 inline constexpr int BALANCE_PROGRESS_WIDTH = 230;
-inline constexpr int ONINE_PROGRESS_WIDTH = 230;
+inline constexpr int ONLINE_PROGRESS_WIDTH = 230;
 inline void renderProgressBar(
     int x, int y, int percent,
     void* barTexture, bool fromRight,
     ProgressType type)
 {
-    int maxWidth = (type == PROGRESS_BALANCE) ? BALANCE_PROGRESS_WIDTH : ONINE_PROGRESS_WIDTH;
+    int maxWidth = (type == PROGRESS_BALANCE) ? BALANCE_PROGRESS_WIDTH : ONLINE_PROGRESS_WIDTH;
     renderProgressBarGeneric(x, y, percent, barTexture, fromRight, maxWidth);
 }
 
