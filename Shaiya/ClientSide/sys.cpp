@@ -128,8 +128,8 @@ void updateStatusOnline(const char* val) {
         snprintf(g_onlineStatus.total.buffer, 128, "Total: %d", total);
         snprintf(g_onlineStatus.light.buffer, 128, "Light: %d", lightCount);
         snprintf(g_onlineStatus.fury.buffer, 128, "Fury: %d", furyCount);
-        snprintf(g_onlineStatus.percentLight.buffer, 128, "AoL: %.2f%%", (double)lightPercent);
-        snprintf(g_onlineStatus.percentFury.buffer, 128, "UoF: %.2f%%", (double)furyPercent);
+        snprintf(g_onlineStatus.percentLight.buffer, 128, "AoL: %.2f%%%%", (double)lightPercent);
+        snprintf(g_onlineStatus.percentFury.buffer, 128, "UoF: %.2f%%%%", (double)furyPercent);
 
         snprintf(g_onlineStatus.fighter.buffer, 128, "Fighter: %d", fighter);
         snprintf(g_onlineStatus.defender.buffer, 128, "Defender: %d", defender);
@@ -187,8 +187,8 @@ void updateStatusKill(const char* val) {
         g_lightPercentIntKill = (int)(lightPercent + 0.5);
         g_furyPercentIntKill = (int)(furyPercent + 0.5);
 
-        snprintf(g_killStatus.percentLight.buffer, 128, "AoL: %.2f%%", lightPercent);
-        snprintf(g_killStatus.percentFury.buffer, 128, "UoF: %.2f%%", furyPercent);
+        snprintf(g_killStatus.percentLight.buffer, 128, "AoL: %.2f%%%%", lightPercent);
+        snprintf(g_killStatus.percentFury.buffer, 128, "UoF: %.2f%%%%", furyPercent);
 
         g_killStatus.isAoLLeading = (g_lightPercentIntKill >= g_furyPercentIntKill);
         g_killStatus.isUoFLeading = !g_killStatus.isAoLLeading;
