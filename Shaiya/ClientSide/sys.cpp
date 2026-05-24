@@ -304,7 +304,7 @@ inline void renderPanel(PanelType type) {
     }
 }
 
-inline void handleMovementExclusive(PanelUIState& ui) {
+inline void MouseMovement(PanelUIState& ui) {
     POINT curPos;
     if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
         GetCursorPos(&curPos);
@@ -339,7 +339,7 @@ inline void doall(int baseX, int baseY) {
     for (auto& [type, ui] : panels) {
         ui.baseX = baseX;
         ui.baseY = baseY;
-        handleMovementExclusive(ui);
+        MouseMovement(ui);
     }
     if (g_activePanel != PANEL_HIDE) {
         renderPanel(g_activePanel);
