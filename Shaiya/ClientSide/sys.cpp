@@ -317,6 +317,7 @@ inline void UIHandler(void* ebxPtr) {
         int bx = toolbar.baseX + toolbar.offsetX;
         int by = toolbar.baseY + toolbar.offsetY;
         DrawTexture(toolbar.background, bx, by);
+        bool draggingOtherPanel = (g_activeDraggingPanel != nullptr && g_activeDraggingPanel->targetPanel != PANEL_HIDE);
         for (auto& [type, btn] : toggleButtons) {
             int btnX = bx + btn.offsetX;
             int btnY = by + btn.offsetY;
@@ -326,8 +327,10 @@ inline void UIHandler(void* ebxPtr) {
             bool isHover = (curPos.x >= btnX && curPos.x <= btnX + btn.width && curPos.y >= btnY && curPos.y <= btnY + btn.height);
             void* tex = (isHover && btn.hoverBackground) ? btn.hoverBackground : btn.background;
             DrawTexture(tex, btnX, btnY);
-            if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) && isHover) {
-                g_activePanel = btn.targetPanel;
+            if (!draggingOtherPanel) {
+                if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) && isHover) {
+                    g_activePanel = btn.targetPanel;
+                }
             }
         }
     }
