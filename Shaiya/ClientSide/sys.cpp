@@ -350,7 +350,6 @@ inline void render_panels(int baseX, int baseY) {
         int bx = toolbar.baseX + toolbar.offsetX;
         int by = toolbar.baseY + toolbar.offsetY;
         renderElement(toolbar.background, bx, by);
-
         for (auto& [type, btn] : toggleButtons) {
             int btnX = bx + btn.offsetX;
             int btnY = by + btn.offsetY;
