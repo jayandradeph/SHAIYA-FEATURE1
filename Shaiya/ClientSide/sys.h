@@ -27,8 +27,8 @@ char online_background[16];
 auto icon_killfeed_background = "killfeed_background.tga";
 char killfeed_background[16];
 
-auto icon_globalkill_background = "globalkill_background.tga";
-char globalkill_background[16];
+auto icon_balance_background = "balance_background.tga";
+char balance_background[16];
 
 auto icon_toolbar_background = "toolbar_background.tga";
 char toolbar_background[16];
