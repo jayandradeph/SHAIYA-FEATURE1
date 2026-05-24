@@ -183,17 +183,21 @@ void shiftFeedTexts(const char* newNotice) {
 }
 
 inline void parseAndHandle(void* espBase) {
-    void* arg = *(void**)((BYTE*)espBase + 84);
-    if (arg == *(void**)"[BALANCE_NOTICE]") {
-        updateStatusKill((const char*)((BYTE*)espBase + 100));
+    const int baseOffset = 84;
+    void* arg = *(void**)((BYTE*)espBase + baseOffset);
+    const char* balance = "[BALANCE_NOTICE]";
+    const char* online = "[ONLINE_NOTICE]";
+    const char* kill = "[KILL_NOTICE]";
+    if (arg == *(void**)balance) {
+        updateStatusKill((const char*)((BYTE*)espBase + baseOffset + strlen(balance)));
         return;
     }
-    if (arg == *(void**)"[ONLINE_NOTICE]") {
-        updateStatusOnline((const char*)((BYTE*)espBase + 99));
+    if (arg == *(void**)online) {
+        updateStatusOnline((const char*)((BYTE*)espBase + baseOffset + strlen(online)));
         return;
     }
-    if (arg == *(void**)"[KILL_NOTICE]") {
-        shiftFeedTexts((const char*)((BYTE*)espBase + 97));
+    if (arg == *(void**)kill) {
+        shiftFeedTexts((const char*)((BYTE*)espBase + baseOffset + strlen(kill)));
         return;
     }
     reinterpret_cast<void(__stdcall*)(uintptr_t)>(6186512);
