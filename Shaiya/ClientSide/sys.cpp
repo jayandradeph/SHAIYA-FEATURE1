@@ -73,7 +73,7 @@ PanelUIState* g_activeDraggingPanel = nullptr;
 std::map<PanelType, PanelUIState> panels = {
     { PANEL_HIDE,    {200,-300,250,140,&toolbar_background,nullptr,PANEL_HIDE,{},false,nullptr,0,0,L".\\panel.ini",L"BUTTON_NOTICE_UI",200,-300 } },
     { PANEL_FEED,    {199,-227,250,140,&killfeed_background,nullptr,PANEL_FEED,{},false,nullptr,0,0,L".\\panel.ini",L"KILL_NOTICE_UI",199,-227 } },
-    { PANEL_BALANCE, {199,-227,250,140,&globalkill_background,nullptr,PANEL_BALANCE,{},false,nullptr,0,0,L".\\panel.ini",L"BALANCE_NOTICE_UI",199,-227 } },
+    { PANEL_BALANCE, {199,-227,250,140,&balance_background,nullptr,PANEL_BALANCE,{},false,nullptr,0,0,L".\\panel.ini",L"BALANCE_NOTICE_UI",199,-227 } },
     { PANEL_ONLINE,  {199,-227,250,140,&online_background,nullptr,PANEL_ONLINE,{},false,nullptr,0,0,L".\\panel.ini",L"ONLINE_NOTICE_UI",199,-227 } }
 };
 
@@ -243,20 +243,16 @@ inline void renderBackground(void* background, int x, int y) {
     }
 }
 
-static void* panelBackgrounds[] = {
-    &toolbar_background, 
-    &globalkill_background, 
-    &killfeed_background, 
-    &online_background 
-};
-
 inline void renderPanel(PanelType type) {
     auto it = panels.find(type);
     if (it == panels.end()) return;
     PanelUIState& ui = it->second;
     int panelX = ui.baseX + ui.offsetX;
     int panelY = ui.baseY + ui.offsetY;
-    if (panelBackgrounds[type]) renderBackground(panelBackgrounds[type], panelX, panelY);
+    if (ui.background) {
+        renderBackground(ui.background, panelX, panelY);
+    }
+
     if (type == PANEL_FEED) {
         TextEntry feedTexts[] = {
             {20,32,feed_texts[0].buffer,255,255,255,0},
