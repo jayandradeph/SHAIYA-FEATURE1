@@ -202,7 +202,7 @@ inline void handle(void* espBase) {
     reinterpret_cast<void(__stdcall*)(uintptr_t)>(6186512);
 }
 
-inline void renderProgressBarGeneric(int x, int y, int percent, void* barTexture, bool fromRight, int maxWidth) {
+inline void renderProgressBar(int x, int y, int percent, void* barTexture, bool fromRight, int maxWidth) {
     if (percent < 0) percent = 0;
     if (percent > 100) percent = 100;
     int width = (percent * maxWidth) / 100;
@@ -265,8 +265,8 @@ inline void renderPanel(PanelType type) {
         }
     }
     else if (type == PANEL_BALANCE) {
-        renderProgressBarGeneric(panelX + 11, panelY + 32, g_lightPercentIntBalance, (void*)loadbar_AoL, false, 230);
-        renderProgressBarGeneric(panelX + 241, panelY + 32, g_furyPercentIntBalance, (void*)loadbar_UoF, true, 230);
+        renderProgressBar(panelX + 11, panelY + 32, g_lightPercentIntBalance, (void*)loadbar_AoL, false, 230);
+        renderProgressBar(panelX + 241, panelY + 32, g_furyPercentIntBalance, (void*)loadbar_UoF, true, 230);
         TextEntry killTexts[] = {
             {36,32,g_killStatus.percentLight.buffer,255,255,255,0},
             {150,32,g_killStatus.percentFury.buffer,255,255,255,0}
@@ -276,8 +276,8 @@ inline void renderPanel(PanelType type) {
         }
     }
     else if (type == PANEL_ONLINE) {
-        renderProgressBarGeneric(panelX + 11, panelY + 32, g_lightPercentIntOnline, (void*)loadbar_AoL, false, 230);
-        renderProgressBarGeneric(panelX + 241, panelY + 32, g_furyPercentIntOnline, (void*)loadbar_UoF, true, 230);
+        renderProgressBar(panelX + 11, panelY + 32, g_lightPercentIntOnline, (void*)loadbar_AoL, false, 230);
+        renderProgressBar(panelX + 241, panelY + 32, g_furyPercentIntOnline, (void*)loadbar_UoF, true, 230);
         TextEntry onlineTexts[] = {
             {105,52,g_onlineStatus.total.buffer,0,255,0,0},
             {10,52,g_onlineStatus.light.buffer,0,255,0,0},
