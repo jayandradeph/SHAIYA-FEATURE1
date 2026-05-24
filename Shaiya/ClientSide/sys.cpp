@@ -183,20 +183,20 @@ void shiftFeedTexts(const char* newNotice) {
 }
 
 inline void parseAndHandle(void* espBase) {
-    void* arg = *(void**)((BYTE*)espBase + 0x54);
+    void* arg = *(void**)((BYTE*)espBase + 84);
     if (arg == *(void**)"[BALANCE_NOTICE]") {
-        updateStatusKill((const char*)((BYTE*)espBase + 0x64));
+        updateStatusKill((const char*)((BYTE*)espBase + 100));
         return;
     }
     if (arg == *(void**)"[ONLINE_NOTICE]") {
-        updateStatusOnline((const char*)((BYTE*)espBase + 0x63));
+        updateStatusOnline((const char*)((BYTE*)espBase + 99));
         return;
     }
     if (arg == *(void**)"[KILL_NOTICE]") {
-        shiftFeedTexts((const char*)((BYTE*)espBase + 0x61));
+        shiftFeedTexts((const char*)((BYTE*)espBase + 97));
         return;
     }
-    reinterpret_cast<void(__stdcall*)(uintptr_t)>(0x5E5C10);
+    reinterpret_cast<void(__stdcall*)(uintptr_t)>(6186512);
 }
 
 inline void renderProgressBarGeneric(int x, int y, int percent, void* barTexture, bool fromRight, int maxWidth) {
