@@ -335,7 +335,7 @@ inline void handleMovementExclusive(PanelUIState& ui) {
     }
 }
 
-inline void render_panels(int baseX, int baseY) {
+inline void doall(int baseX, int baseY) {
     for (auto& [type, ui] : panels) {
         ui.baseX = baseX;
         ui.baseY = baseY;
@@ -375,7 +375,7 @@ __declspec(naked) void naked_0x47DD4D() {
         pushad
         push ecx
         push eax
-        call render_panels
+        call doall
         add esp, 8
         popad
         movzx eax, byte ptr[ebx + 0x3CC]
