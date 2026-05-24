@@ -199,7 +199,6 @@ inline void handle(void* espBase) {
         updateStatusOnline((const char*)((BYTE*)espBase + baseOffset + strlen(online)));
         return;
     }
-    reinterpret_cast<void(__stdcall*)(uintptr_t)>(6186512);
 }
 
 inline void renderProgressBar(int x, int y, int percent, void* barTexture, bool fromRight, int maxWidth) {
