@@ -185,15 +185,15 @@ void shiftFeedTexts(const char* newNotice) {
 inline void parseAndHandle(void* espBase) {
     void* arg = *(void**)((BYTE*)espBase + 0x54);
     if (arg == *(void**)"[BALANCE_NOTICE]") {
-        updateStatusKill((const char*)((BYTE*)espBase + 0x54 + 16));
+        updateStatusKill((const char*)((BYTE*)espBase + 0x64));
         return;
     }
     if (arg == *(void**)"[ONLINE_NOTICE]") {
-        updateStatusOnline((const char*)((BYTE*)espBase + 0x54 + 15));
+        updateStatusOnline((const char*)((BYTE*)espBase + 0x63));
         return;
     }
     if (arg == *(void**)"[KILL_NOTICE]") {
-        shiftFeedTexts((const char*)((BYTE*)espBase + 0x54 + 13));
+        shiftFeedTexts((const char*)((BYTE*)espBase + 0x61));
         return;
     }
     reinterpret_cast<void(__stdcall*)(uintptr_t)>(0x5E5C10);
