@@ -174,11 +174,10 @@ void updateStatusKill(const char* val) {
 }
 
 void shiftFeedTexts(const char* newNotice) {
-    strcpy(feed_texts[4].buffer, feed_texts[3].buffer);
-    strcpy(feed_texts[3].buffer, feed_texts[2].buffer);
-    strcpy(feed_texts[2].buffer, feed_texts[1].buffer);
-    strcpy(feed_texts[1].buffer, feed_texts[0].buffer);
-    strncpy(feed_texts[0].buffer, newNotice, sizeof(feed_texts[0].buffer));
+    for (int i = 4; i > 0; --i) {
+    strcpy(feed_texts[i].buffer, feed_texts[i - 1].buffer);
+    }
+    strncpy(feed_texts[0].buffer, newNotice, sizeof(feed_texts[0].buffer) - 1);
     feed_texts[0].buffer[sizeof(feed_texts[0].buffer) - 1] = '\0';
 }
 
