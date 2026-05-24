@@ -334,15 +334,9 @@ inline void MouseMovement(PanelUIState& ui) {
     }
 }
 
-inline void doall() {
-    int baseX = 0;
-    int baseY = 0;
-    __asm {
-        mov eax, [ebx + 4]
-        mov ecx, [ebx + 8]
-        mov baseX, eax
-        mov baseY, ecx
-    }
+inline void doall(void* ebxPtr) {
+    int baseX = *(int*)((uintptr_t)ebxPtr + 4);
+    int baseY = *(int*)((uintptr_t)ebxPtr + 8);
     for (auto& [type, ui] : panels) {
         ui.baseX = baseX;
         ui.baseY = baseY;
@@ -375,7 +369,9 @@ auto u0x47DD54 = 0x47DD54;
 __declspec(naked) void naked_0x47DD4D() {
     __asm {
         pushad
+        push ebx
         call doall
+        add esp, 4
         popad
         movzx eax, byte ptr[ebx + 0x3CC]
         jmp u0x47DD54
