@@ -185,19 +185,19 @@ void shiftFeedTexts(const char* newNotice) {
 inline void parseAndHandle(void* espBase) {
     const int baseOffset = 84;
     void* arg = *(void**)((BYTE*)espBase + baseOffset);
+    const char* kill = "[KILL_NOTICE]";
     const char* balance = "[BALANCE_NOTICE]";
     const char* online = "[ONLINE_NOTICE]";
-    const char* kill = "[KILL_NOTICE]";
+    if (arg == *(void**)kill) {
+        shiftFeedTexts((const char*)((BYTE*)espBase + baseOffset + strlen(kill)));
+        return;
+    }
     if (arg == *(void**)balance) {
         updateStatusKill((const char*)((BYTE*)espBase + baseOffset + strlen(balance)));
         return;
     }
     if (arg == *(void**)online) {
         updateStatusOnline((const char*)((BYTE*)espBase + baseOffset + strlen(online)));
-        return;
-    }
-    if (arg == *(void**)kill) {
-        shiftFeedTexts((const char*)((BYTE*)espBase + baseOffset + strlen(kill)));
         return;
     }
     reinterpret_cast<void(__stdcall*)(uintptr_t)>(6186512);
@@ -252,7 +252,6 @@ inline void renderPanel(PanelType type) {
     if (ui.background) {
         renderBackground(ui.background, panelX, panelY);
     }
-
     if (type == PANEL_FEED) {
         TextEntry feedTexts[] = {
             {20,32,feed_texts[0].buffer,255,255,255,0},
